@@ -57,3 +57,18 @@ export interface SiteStats {
   totalArticles: number;
   totalContributors: number;
 }
+
+export type UserRole = "member" | "contributor" | "moderator" | "admin";
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  username: string;
+  avatarUrl?: string;
+  role: UserRole;
+  points: number;
+  articleCount: number;
+  badges: string[];
+  joinDate: string;
+}

@@ -1,15 +1,44 @@
-import type { Metadata } from "next";
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-
-export const metadata: Metadata = {
-  title: "Masuk",
-};
+import { useAuth } from "@/lib/auth-context";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const { login, user } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  if (user) {
+    router.replace("/profil");
+    return null;
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+    if (!email || !password) {
+      setError("Isi semua field");
+      return;
+    }
+    setLoading(true);
+    const result = await login(email, password);
+    setLoading(false);
+    if (result.ok) {
+      router.push("/profil");
+    } else {
+      setError(result.error || "Login gagal");
+    }
+  }
+
   return (
     <div className="flex min-h-[calc(100vh-10rem)] items-center justify-center px-4 py-12">
       <Card className="w-full max-w-md">
@@ -50,18 +79,17 @@ export default function LoginPage() {
             </span>
           </div>
 
-          <form className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label
-                htmlFor="email"
-                className="mb-1.5 block text-sm font-medium"
-              >
+              <label htmlFor="email" className="mb-1.5 block text-sm font-medium">
                 Email
               </label>
               <Input
                 id="email"
                 type="email"
                 placeholder="nama@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
 
@@ -70,7 +98,7 @@ export default function LoginPage() {
                 <label htmlFor="password" className="text-sm font-medium">
                   Kata Sandi
                 </label>
-                <span className="text-xs text-muted-foreground cursor-pointer hover:text-foreground">
+                <span className="text-xs text-muted-foreground">
                   Lupa kata sandi?
                 </span>
               </div>
@@ -78,13 +106,25 @@ export default function LoginPage() {
                 id="password"
                 type="password"
                 placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
             </div>
 
-            <Button className="w-full" disabled>
-              Masuk
+            {error && (
+              <p className="text-sm text-destructive">{error}</p>
+            )}
+
+            <Button className="w-full" type="submit" disabled={loading}>
+              {loading ? "Memproses..." : "Masuk"}
             </Button>
           </form>
+
+          <div className="mt-4 rounded-md bg-muted p-3 text-xs text-muted-foreground">
+            <p className="font-medium text-foreground">Demo akun:</p>
+            <p>raka@pramuka.net / password123 (kontributor)</p>
+            <p>admin@pramuka.net / admin123 (admin)</p>
+          </div>
 
           <p className="mt-6 text-center text-sm text-muted-foreground">
             Belum punya akun?{" "}
