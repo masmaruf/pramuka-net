@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "pages:build": "next build",
+    "pages:deploy": "next build && wrangler pages deploy out --project-name pramuka-net"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
