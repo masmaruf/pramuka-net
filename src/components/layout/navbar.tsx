@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/lib/auth-context";
 import { getInitials } from "@/lib/utils";
 import { ThemeToggle } from "./theme-toggle";
+import { NotificationBell } from "./notification-bell";
 
 const navLinks = [
   { href: "/", label: "Beranda" },
@@ -63,6 +64,7 @@ export function Navbar() {
 
           {user ? (
             <>
+            <NotificationBell />
             <Link href="/kirim-artikel">
               <Button size="sm" variant="outline" className="gap-1">
                 <PenLine className="h-4 w-4" />

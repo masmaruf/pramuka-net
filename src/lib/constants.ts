@@ -3,6 +3,7 @@ export const STORAGE_KEYS = {
   USERS: "pramuka_users",
   ARTICLES: "pramuka_articles",
   INTERACTIONS: "pramuka_interactions",
+  NOTIFICATIONS: "pramuka_notifications",
 } as const;
 
 export const POINTS_PER_ARTICLE = 50;

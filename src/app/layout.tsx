@@ -3,6 +3,7 @@ import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import { AuthProvider } from "@/lib/auth-context";
 import { ArticleStoreProvider } from "@/lib/article-store";
 import { InteractionStoreProvider } from "@/lib/interaction-store";
+import { NotificationStoreProvider } from "@/lib/notification-store";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { ThemeProvider } from "@/components/layout/theme-provider";
@@ -77,9 +78,11 @@ export default function RootLayout({
           <AuthProvider>
             <ArticleStoreProvider>
               <InteractionStoreProvider>
-                <Navbar />
-                <main className="flex-1">{children}</main>
-                <Footer />
+                <NotificationStoreProvider>
+                  <Navbar />
+                  <main className="flex-1">{children}</main>
+                  <Footer />
+                </NotificationStoreProvider>
               </InteractionStoreProvider>
             </ArticleStoreProvider>
           </AuthProvider>

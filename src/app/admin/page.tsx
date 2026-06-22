@@ -22,11 +22,15 @@ import { useArticleStore } from "@/lib/article-store";
 import { siteStats } from "@/lib/data";
 import { calculateNewBadges, getPointsReward } from "@/lib/gamification";
 import { getInitials } from "@/lib/utils";
+import { useNotificationStore } from "@/lib/notification-store";
+import { POINTS_PER_ARTICLE } from "@/lib/constants";
+import { badges as allBadges } from "@/lib/data";
 
 export default function AdminPage() {
   const { user, isLoading, updateUser } = useAuth();
   const router = useRouter();
   const { submittedArticles, updateStatus, toggleEditorPick, getAcceptedByAuthor, getAcceptedCategories } = useArticleStore();
+  const { addNotification } = useNotificationStore();
 
   useEffect(() => {
     if (!isLoading && (!user || (user.role !== "admin" && user.role !== "moderator"))) {
@@ -70,7 +74,39 @@ export default function AdminPage() {
           badges: [...new Set([...user.badges, ...newBadges])],
         });
       }
+      addNotification({
+        type: "article_accepted",
+        title: "Artikel Diterima!",
+        message: `"${article.title}" telah diterima dan diterbitkan.`,
+      });
+      addNotification({
+        type: "points_earned",
+        title: `+${POINTS_PER_ARTICLE} Poin`,
+        message: `Kamu mendapat ${POINTS_PER_ARTICLE} poin dari artikel "${article.title}".`,
+      });
+      for (const badgeId of newBadges) {
+        const badge = allBadges.find((b) => b.id === badgeId);
+        if (badge) {
+          addNotification({
+            type: "badge_earned",
+            title: `Badge Baru: ${badge.name}!`,
+            message: badge.description,
+          });
+        }
+      }
     });
+  }
+
+  function handleReject(articleId: string) {
+    const article = submittedArticles.find((a) => a.id === articleId);
+    updateStatus(articleId, "ditolak");
+    if (article) {
+      addNotification({
+        type: "article_rejected",
+        title: "Artikel Ditolak",
+        message: `"${article.title}" tidak memenuhi kriteria. Silakan revisi dan kirim ulang.`,
+      });
+    }
   }
 
   return (
@@ -160,7 +196,7 @@ export default function AdminPage() {
                         size="sm"
                         variant="destructive"
                         className="gap-1"
-                        onClick={() => updateStatus(article.id, "ditolak")}
+                        onClick={() => handleReject(article.id)}
                       >
                         <XCircle className="h-4 w-4" />
                         Tolak
