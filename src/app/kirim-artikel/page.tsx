@@ -21,6 +21,8 @@ import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/lib/auth-context";
 import { useArticleStore } from "@/lib/article-store";
 import { categories } from "@/lib/data";
+import { POINTS_PER_ARTICLE } from "@/lib/constants";
+import { RichTextEditor, htmlToPlainText } from "@/components/article/rich-text-editor";
 
 const rules = [
   "Gunakan bahasa Indonesia yang baik dan benar",
@@ -100,8 +102,9 @@ export default function KirimArtikelPage() {
     if (!title.trim()) { setError("Judul artikel wajib diisi"); return; }
     if (!categoryId) { setError("Pilih kategori artikel"); return; }
     if (!excerpt.trim()) { setError("Ringkasan wajib diisi"); return; }
-    if (!content.trim()) { setError("Konten artikel wajib diisi"); return; }
-    if (content.trim().split(/\s+/).length < 50) {
+    const plainText = htmlToPlainText(content);
+    if (!plainText) { setError("Konten artikel wajib diisi"); return; }
+    if (plainText.split(/\s+/).length < 50) {
       setError("Artikel minimal 50 kata");
       return;
     }
@@ -260,19 +263,12 @@ export default function KirimArtikelPage() {
             </div>
 
             <div>
-              <label htmlFor="content" className="mb-1.5 block text-sm font-medium">
+              <label className="mb-1.5 block text-sm font-medium">
                 Konten Artikel
               </label>
-              <textarea
-                id="content"
-                rows={14}
-                placeholder="Tulis artikel lengkapmu di sini... Gunakan paragraf yang jelas dan informatif."
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                className="w-full rounded-md border bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              />
+              <RichTextEditor content={content} onChange={setContent} />
               <p className="mt-1 text-xs text-muted-foreground">
-                {content.trim().split(/\s+/).filter(Boolean).length} kata
+                {htmlToPlainText(content).split(/\s+/).filter(Boolean).length} kata
               </p>
             </div>
 
@@ -342,7 +338,7 @@ export default function KirimArtikelPage() {
               <Separator className="my-3" />
               <p className="text-sm text-muted-foreground">
                 Setelah diterima, kamu akan mendapat{" "}
-                <span className="font-medium text-primary">+50 poin</span>{" "}
+                <span className="font-medium text-primary">+{POINTS_PER_ARTICLE} poin</span>{" "}
                 menuju badge berikutnya.
               </p>
             </CardContent>

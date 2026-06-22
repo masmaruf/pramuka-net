@@ -50,7 +50,8 @@ export default async function ArticleDetailPage({
     )
     .slice(0, 3);
 
-  const paragraphs = article.content.split("\n");
+  const isHtmlContent = article.content.startsWith("<");
+  const paragraphs = isHtmlContent ? [] : article.content.split("\n");
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
@@ -112,88 +113,95 @@ export default async function ArticleDetailPage({
       <Separator className="mb-8" />
 
       {/* Content */}
-      <article className="prose prose-lg max-w-none">
-        {paragraphs.map((line, i) => {
-          const trimmed = line.trim();
-          if (!trimmed) return null;
+      {isHtmlContent ? (
+        <article
+          className="prose prose-lg max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-li:text-muted-foreground prose-strong:text-foreground"
+          dangerouslySetInnerHTML={{ __html: article.content }}
+        />
+      ) : (
+        <article className="prose prose-lg max-w-none">
+          {paragraphs.map((line, i) => {
+            const trimmed = line.trim();
+            if (!trimmed) return null;
 
-          if (trimmed.startsWith("## ")) {
-            return (
-              <h2
-                key={i}
-                className="mt-8 mb-4 text-2xl font-bold text-foreground"
-              >
-                {trimmed.slice(3)}
-              </h2>
-            );
-          }
+            if (trimmed.startsWith("## ")) {
+              return (
+                <h2
+                  key={i}
+                  className="mt-8 mb-4 text-2xl font-bold text-foreground"
+                >
+                  {trimmed.slice(3)}
+                </h2>
+              );
+            }
 
-          if (trimmed.startsWith("### ")) {
-            return (
-              <h3
-                key={i}
-                className="mt-6 mb-3 text-xl font-semibold text-foreground"
-              >
-                {trimmed.slice(4)}
-              </h3>
-            );
-          }
+            if (trimmed.startsWith("### ")) {
+              return (
+                <h3
+                  key={i}
+                  className="mt-6 mb-3 text-xl font-semibold text-foreground"
+                >
+                  {trimmed.slice(4)}
+                </h3>
+              );
+            }
 
-          if (trimmed.startsWith("- **")) {
-            const match = trimmed.match(/^- \*\*(.+?)\*\*\s*[-–—]?\s*(.*)$/);
-            if (match) {
+            if (trimmed.startsWith("- **")) {
+              const match = trimmed.match(/^- \*\*(.+?)\*\*\s*[-–—]?\s*(.*)$/);
+              if (match) {
+                return (
+                  <li key={i} className="ml-6 mb-1 list-disc text-muted-foreground">
+                    <strong className="text-foreground">{match[1]}</strong>
+                    {match[2] && ` — ${match[2]}`}
+                  </li>
+                );
+              }
+            }
+
+            if (trimmed.startsWith("- ")) {
               return (
                 <li key={i} className="ml-6 mb-1 list-disc text-muted-foreground">
-                  <strong className="text-foreground">{match[1]}</strong>
-                  {match[2] && ` — ${match[2]}`}
+                  {trimmed.slice(2)}
                 </li>
               );
             }
-          }
 
-          if (trimmed.startsWith("- ")) {
-            return (
-              <li key={i} className="ml-6 mb-1 list-disc text-muted-foreground">
-                {trimmed.slice(2)}
-              </li>
-            );
-          }
-
-          if (/^\d+\.\s/.test(trimmed)) {
-            const text = trimmed.replace(/^\d+\.\s/, "");
-            const boldMatch = text.match(/^\*\*(.+?)\*\*\s*[-–—]?\s*(.*)$/);
-            if (boldMatch) {
+            if (/^\d+\.\s/.test(trimmed)) {
+              const text = trimmed.replace(/^\d+\.\s/, "");
+              const boldMatch = text.match(/^\*\*(.+?)\*\*\s*[-–—]?\s*(.*)$/);
+              if (boldMatch) {
+                return (
+                  <li
+                    key={i}
+                    className="ml-6 mb-1 list-decimal text-muted-foreground"
+                  >
+                    <strong className="text-foreground">{boldMatch[1]}</strong>
+                    {boldMatch[2] && ` — ${boldMatch[2]}`}
+                  </li>
+                );
+              }
               return (
                 <li
                   key={i}
                   className="ml-6 mb-1 list-decimal text-muted-foreground"
                 >
-                  <strong className="text-foreground">{boldMatch[1]}</strong>
-                  {boldMatch[2] && ` — ${boldMatch[2]}`}
+                  {text}
                 </li>
               );
             }
+
+            if (trimmed.startsWith("|")) {
+              return null;
+            }
+
             return (
-              <li
-                key={i}
-                className="ml-6 mb-1 list-decimal text-muted-foreground"
-              >
-                {text}
-              </li>
+              <p key={i} className="mb-4 leading-relaxed text-muted-foreground">
+                {trimmed}
+              </p>
             );
-          }
-
-          if (trimmed.startsWith("|")) {
-            return null;
-          }
-
-          return (
-            <p key={i} className="mb-4 leading-relaxed text-muted-foreground">
-              {trimmed}
-            </p>
-          );
-        })}
-      </article>
+          })}
+        </article>
+      )}
 
       {/* Tags + Share */}
       <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
