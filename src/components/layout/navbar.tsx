@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Menu, X, Search, User, LogOut, Shield } from "lucide-react";
+import { Menu, X, Search, User, LogOut, Shield, PenLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/lib/auth-context";
@@ -65,6 +65,13 @@ export function Navbar() {
           </Link>
 
           {user ? (
+            <>
+            <Link href="/kirim-artikel">
+              <Button size="sm" variant="outline" className="gap-1">
+                <PenLine className="h-4 w-4" />
+                Kirim Artikel
+              </Button>
+            </Link>
             <div className="relative">
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -117,6 +124,7 @@ export function Navbar() {
                 </>
               )}
             </div>
+            </>
           ) : (
             <>
               <Link href="/login">
@@ -165,6 +173,13 @@ export function Navbar() {
                     <p className="text-xs text-muted-foreground">@{user.username}</p>
                   </div>
                 </div>
+                <Link
+                  href="/kirim-artikel"
+                  className="rounded-md px-3 py-2 text-sm font-medium text-primary hover:bg-accent"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  + Kirim Artikel
+                </Link>
                 <Link
                   href="/profil"
                   className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent"

@@ -22,7 +22,8 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/lib/auth-context";
-import { badges as allBadges, articles } from "@/lib/data";
+import { useArticleStore } from "@/lib/article-store";
+import { badges as allBadges, articles as seedArticles } from "@/lib/data";
 
 const iconMap: Record<string, React.ElementType> = {
   pencil: Pencil,
@@ -43,6 +44,7 @@ const roleLabelMap: Record<string, string> = {
 export default function ProfilPage() {
   const { user, logout, isLoading } = useAuth();
   const router = useRouter();
+  const { getByAuthor } = useArticleStore();
 
   useEffect(() => {
     if (!isLoading && !user) router.replace("/login");
@@ -50,9 +52,11 @@ export default function ProfilPage() {
 
   const earnedBadges = allBadges.filter((b) => user?.badges.includes(b.id));
   const lockedBadges = allBadges.filter((b) => !user?.badges.includes(b.id));
-  const userArticles = articles.filter(
+  const seedUserArticles = seedArticles.filter(
     (a) => a.author.username === user?.username
   );
+  const submittedUserArticles = user ? getByAuthor(user.username) : [];
+  const userArticles = [...submittedUserArticles, ...seedUserArticles];
 
   if (isLoading) {
     return (
