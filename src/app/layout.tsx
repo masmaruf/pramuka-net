@@ -5,6 +5,7 @@ import { ArticleStoreProvider } from "@/lib/article-store";
 import { InteractionStoreProvider } from "@/lib/interaction-store";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
+import { ThemeProvider } from "@/components/layout/theme-provider";
 import "./globals.css";
 
 const inter = Inter({
@@ -69,17 +70,20 @@ export default function RootLayout({
     <html
       lang="id"
       className={`${inter.variable} ${jakarta.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <body className="flex min-h-full flex-col bg-background text-foreground">
-        <AuthProvider>
-          <ArticleStoreProvider>
-            <InteractionStoreProvider>
-              <Navbar />
-              <main className="flex-1">{children}</main>
-              <Footer />
-            </InteractionStoreProvider>
-          </ArticleStoreProvider>
-        </AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <ArticleStoreProvider>
+              <InteractionStoreProvider>
+                <Navbar />
+                <main className="flex-1">{children}</main>
+                <Footer />
+              </InteractionStoreProvider>
+            </ArticleStoreProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

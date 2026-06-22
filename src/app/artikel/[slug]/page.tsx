@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ArticleCard } from "@/components/article/article-card";
 import { ArticleInteractions } from "@/components/article/article-interactions";
+import { ArticleShare } from "@/components/article/article-share";
 import { articles, getArticleBySlug } from "@/lib/data";
 import { getInitials } from "@/lib/utils";
 
@@ -194,13 +195,16 @@ export default async function ArticleDetailPage({
         })}
       </article>
 
-      {/* Tags */}
-      <div className="mt-8 flex flex-wrap gap-2">
-        {article.tags.map((tag) => (
-          <Badge key={tag.id} variant="outline">
-            #{tag.name}
-          </Badge>
-        ))}
+      {/* Tags + Share */}
+      <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
+        <div className="flex flex-wrap gap-2">
+          {article.tags.map((tag) => (
+            <Badge key={tag.id} variant="outline">
+              #{tag.name}
+            </Badge>
+          ))}
+        </div>
+        <ArticleShare slug={article.slug} title={article.title} />
       </div>
 
       {/* Like, Bookmark, Comments */}
