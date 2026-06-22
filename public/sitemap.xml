@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://pramuka.net</loc><priority>1.0</priority><changefreq>daily</changefreq></url>
+  <url><loc>https://pramuka.net/artikel</loc><priority>0.9</priority><changefreq>daily</changefreq></url>
+  <url><loc>https://pramuka.net/badge</loc><priority>0.8</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://pramuka.net/panduan</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://pramuka.net/kebijakan</loc><priority>0.5</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://pramuka.net/tentang</loc><priority>0.6</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://pramuka.net/hubungi</loc><priority>0.5</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://pramuka.net/syarat</loc><priority>0.3</priority><changefreq>yearly</changefreq></url>
+  <url><loc>https://pramuka.net/privasi</loc><priority>0.3</priority><changefreq>yearly</changefreq></url>
+  <url><loc>https://pramuka.net/artikel/teknik-membuat-api-unggun</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://pramuka.net/artikel/sejarah-gerakan-pramuka-indonesia</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://pramuka.net/artikel/morse-code-pramuka-pemula</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://pramuka.net/artikel/wosm-peran-pramuka-internasional</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://pramuka.net/artikel/pertolongan-pertama-skill-pramuka</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://pramuka.net/artikel/mendirikan-tenda-dome-10-menit</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+</urlset>

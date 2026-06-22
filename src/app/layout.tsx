@@ -18,6 +18,8 @@ const jakarta = Plus_Jakarta_Sans({
   display: "swap",
 });
 
+const siteUrl = "https://pramuka.net";
+
 export const metadata: Metadata = {
   title: {
     default: "Pramuka.net — Platform Kepanduan Indonesia",
@@ -25,6 +27,36 @@ export const metadata: Metadata = {
   },
   description:
     "Platform komunitas kepanduan Indonesia untuk berbagi ilmu, pengalaman, dan semangat Pramuka. Tulis artikel, raih badge, dan bangun komunitas bersama.",
+  metadataBase: new URL(siteUrl),
+  keywords: [
+    "pramuka",
+    "kepanduan",
+    "pramuka indonesia",
+    "artikel pramuka",
+    "gerakan pramuka",
+    "badge pramuka",
+    "komunitas pramuka",
+  ],
+  authors: [{ name: "Pramuka.net" }],
+  openGraph: {
+    type: "website",
+    locale: "id_ID",
+    url: siteUrl,
+    siteName: "Pramuka.net",
+    title: "Pramuka.net — Platform Kepanduan Indonesia",
+    description:
+      "Berbagi pengetahuan, pengalaman, dan semangat kepanduan. Tulis artikel, raih badge, dan bangun komunitas bersama.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Pramuka.net — Platform Kepanduan Indonesia",
+    description:
+      "Platform komunitas kepanduan Indonesia untuk berbagi ilmu dan semangat Pramuka.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
