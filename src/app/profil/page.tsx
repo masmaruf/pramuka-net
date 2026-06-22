@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -51,10 +52,11 @@ export default function ProfilPage() {
     );
   }
 
-  if (!user) {
-    router.replace("/login");
-    return null;
-  }
+  useEffect(() => {
+    if (!isLoading && !user) router.replace("/login");
+  }, [user, isLoading, router]);
+
+  if (!user) return null;
 
   const earnedBadges = allBadges.filter((b) => user.badges.includes(b.id));
   const lockedBadges = allBadges.filter((b) => !user.badges.includes(b.id));

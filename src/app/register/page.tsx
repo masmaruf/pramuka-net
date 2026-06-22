@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
@@ -16,10 +16,11 @@ export default function RegisterPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  if (user) {
-    router.replace("/profil");
-    return null;
-  }
+  useEffect(() => {
+    if (user) router.replace("/profil");
+  }, [user, router]);
+
+  if (user) return null;
 
   function update(field: string, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
