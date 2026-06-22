@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import type { User } from "./types";
+import { STORAGE_KEYS } from "./constants";
 
 interface AuthState {
   user: User | null;
@@ -28,8 +29,6 @@ interface RegisterData {
   username: string;
   password: string;
 }
-
-const STORAGE_KEY = "pramuka_auth";
 
 const demoUsers: (User & { password: string })[] = [
   {
@@ -65,7 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
+      const stored = localStorage.getItem(STORAGE_KEYS.AUTH);
       if (stored) {
         setState({ user: JSON.parse(stored), isLoading: false });
       } else {
@@ -78,9 +77,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const persist = useCallback((user: User | null) => {
     if (user) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+      localStorage.setItem(STORAGE_KEYS.AUTH, JSON.stringify(user));
     } else {
-      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(STORAGE_KEYS.AUTH);
     }
     setState({ user, isLoading: false });
   }, []);
@@ -96,7 +95,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { ok: true };
       }
 
-      const stored = localStorage.getItem("pramuka_users");
+      const stored = localStorage.getItem(STORAGE_KEYS.USERS);
       if (stored) {
         const users: (User & { password: string })[] = JSON.parse(stored);
         const match = users.find(
@@ -117,7 +116,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const register = useCallback(
     async (data: RegisterData) => {
       const allDemo = demoUsers.map((u) => u.email);
-      const stored = localStorage.getItem("pramuka_users");
+      const stored = localStorage.getItem(STORAGE_KEYS.USERS);
       const existing: (User & { password: string })[] = stored
         ? JSON.parse(stored)
         : [];
@@ -146,7 +145,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       };
 
       existing.push(newUser);
-      localStorage.setItem("pramuka_users", JSON.stringify(existing));
+      localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(existing));
 
       const { password: _, ...user } = newUser;
       persist(user);

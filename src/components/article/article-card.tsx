@@ -1,19 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Eye, Heart, Calendar, Star } from "lucide-react";
+import { Eye, Calendar, Star } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import type { Article } from "@/lib/types";
-
-function getInitials(name: string) {
-  return name
-    .split(" ")
-    .map((w) => w[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
-}
+import { getInitials } from "@/lib/utils";
 
 export function ArticleCard({ article }: { article: Article }) {
   return (
@@ -67,10 +59,6 @@ export function ArticleCard({ article }: { article: Article }) {
               <span className="flex items-center gap-1">
                 <Eye className="h-3 w-3" />
                 {article.views.toLocaleString("id-ID")}
-              </span>
-              <span className="flex items-center gap-1">
-                <Heart className="h-3 w-3" />
-                {article.likes}
               </span>
               <span className="flex items-center gap-1">
                 <Calendar className="h-3 w-3" />

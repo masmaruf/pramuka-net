@@ -21,6 +21,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useArticleStore } from "@/lib/article-store";
 import { siteStats } from "@/lib/data";
 import { calculateNewBadges, getPointsReward } from "@/lib/gamification";
+import { getInitials } from "@/lib/utils";
 
 export default function AdminPage() {
   const { user, isLoading, updateUser } = useAuth();
@@ -47,10 +48,6 @@ export default function AdminPage() {
     { label: "Ditolak", value: rejected.length, icon: XCircle, color: "text-red-500" },
     { label: "Total Anggota", value: siteStats.totalMembers.toLocaleString("id-ID"), icon: Users, color: "text-primary" },
   ];
-
-  function getInitials(name: string) {
-    return name.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2);
-  }
 
   function handleAccept(articleId: string) {
     updateStatus(articleId, "diterima", (article) => {

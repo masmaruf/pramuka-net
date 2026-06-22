@@ -8,6 +8,7 @@ import {
   useCallback,
   type ReactNode,
 } from "react";
+import { STORAGE_KEYS } from "./constants";
 
 export interface Comment {
   id: string;
@@ -36,7 +37,6 @@ interface InteractionStoreValue {
   getComments: (articleSlug: string) => Comment[];
 }
 
-const STORAGE_KEY = "pramuka_interactions";
 
 const defaultState: InteractionState = { likes: {}, bookmarks: {}, comments: [] };
 
@@ -47,14 +47,14 @@ export function InteractionStoreProvider({ children }: { children: ReactNode }) 
 
   useEffect(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
+      const stored = localStorage.getItem(STORAGE_KEYS.INTERACTIONS);
       if (stored) setState(JSON.parse(stored));
     } catch {}
   }, []);
 
   function persist(next: InteractionState) {
     setState(next);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    localStorage.setItem(STORAGE_KEYS.INTERACTIONS, JSON.stringify(next));
   }
 
   const toggleLike = useCallback(

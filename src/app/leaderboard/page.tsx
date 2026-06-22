@@ -5,78 +5,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/lib/auth-context";
-import { badges as allBadges } from "@/lib/data";
-
-const leaderboardData = [
-  {
-    rank: 1,
-    name: "Siti Rahayu",
-    username: "siti_pandu",
-    points: 580,
-    articles: 12,
-    badges: ["b1", "b2", "b3"],
-  },
-  {
-    rank: 2,
-    name: "Raka Nugraha",
-    username: "raka_pramuka",
-    points: 420,
-    articles: 7,
-    badges: ["b1", "b2"],
-  },
-  {
-    rank: 3,
-    name: "Dimas Pratama",
-    username: "dimas_scout",
-    points: 310,
-    articles: 5,
-    badges: ["b1", "b3"],
-  },
-  {
-    rank: 4,
-    name: "Putri Andini",
-    username: "putri_pramuka",
-    points: 250,
-    articles: 4,
-    badges: ["b1"],
-  },
-  {
-    rank: 5,
-    name: "Ahmad Fajar",
-    username: "fajar_pramuka",
-    points: 200,
-    articles: 3,
-    badges: ["b1"],
-  },
-  {
-    rank: 6,
-    name: "Dewi Lestari",
-    username: "dewi_pandu",
-    points: 150,
-    articles: 2,
-    badges: ["b1"],
-  },
-  {
-    rank: 7,
-    name: "Budi Santoso",
-    username: "budi_scout",
-    points: 100,
-    articles: 2,
-    badges: [],
-  },
-  {
-    rank: 8,
-    name: "Rina Wati",
-    username: "rina_pramuka",
-    points: 50,
-    articles: 1,
-    badges: [],
-  },
-];
-
-function getInitials(name: string) {
-  return name.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2);
-}
+import { badges as allBadges, leaderboardData } from "@/lib/data";
+import { getInitials } from "@/lib/utils";
 
 function getRankIcon(rank: number) {
   if (rank === 1) return <Trophy className="h-6 w-6 text-yellow-500" />;

@@ -7,10 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/lib/auth-context";
 import { useInteractionStore } from "@/lib/interaction-store";
-
-function getInitials(name: string) {
-  return name.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2);
-}
+import { getInitials } from "@/lib/utils";
 
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -23,13 +20,7 @@ function timeAgo(dateStr: string): string {
   return `${days} hari lalu`;
 }
 
-export function ArticleInteractions({
-  slug,
-  baseLikes,
-}: {
-  slug: string;
-  baseLikes: number;
-}) {
+export function ArticleInteractions({ slug }: { slug: string }) {
   const { user } = useAuth();
   const {
     toggleLike, hasLiked, getLikeCount,
@@ -41,8 +32,7 @@ export function ArticleInteractions({
 
   const liked = user ? hasLiked(slug, user.id) : false;
   const bookmarked = user ? hasBookmarked(slug, user.id) : false;
-  const extraLikes = getLikeCount(slug);
-  const totalLikes = baseLikes + extraLikes;
+  const totalLikes = getLikeCount(slug);
   const comments = getComments(slug);
 
   function handleLike() {

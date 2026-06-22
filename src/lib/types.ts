@@ -31,7 +31,6 @@ export interface Article {
   status: ArticleStatus;
   isEditorPick: boolean;
   views: number;
-  likes: number;
   createdAt: string;
   publishedAt?: string;
 }

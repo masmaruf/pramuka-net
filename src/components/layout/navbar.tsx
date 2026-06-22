@@ -7,6 +7,7 @@ import { Menu, X, Search, User, LogOut, Shield, PenLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/lib/auth-context";
+import { getInitials } from "@/lib/utils";
 
 const navLinks = [
   { href: "/", label: "Beranda" },
@@ -28,14 +29,7 @@ export function Navbar() {
     router.push("/");
   }
 
-  const initials = user
-    ? user.name
-        .split(" ")
-        .map((w) => w[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2)
-    : "";
+  const initials = user ? getInitials(user.name) : "";
 
   return (
     <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">

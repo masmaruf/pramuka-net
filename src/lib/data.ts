@@ -127,7 +127,7 @@ Menguasai teknik membuat api unggun bukan hanya tentang keterampilan survival, t
     status: "diterima",
     isEditorPick: true,
     views: 1240,
-    likes: 89,
+
     createdAt: "2024-12-10",
     publishedAt: "2024-12-12",
   },
@@ -199,7 +199,7 @@ Gerakan Pramuka telah menjadi bagian integral dari pembentukan karakter generasi
     status: "diterima",
     isEditorPick: true,
     views: 2150,
-    likes: 156,
+
     createdAt: "2024-12-05",
     publishedAt: "2024-12-08",
   },
@@ -270,7 +270,7 @@ Menguasai sandi Morse bukan hanya keterampilan kepanduan, tetapi juga melatih ko
     status: "diterima",
     isEditorPick: false,
     views: 890,
-    likes: 67,
+
     createdAt: "2024-12-01",
     publishedAt: "2024-12-03",
   },
@@ -321,7 +321,7 @@ Keterlibatan Pramuka Indonesia di kancah internasional menunjukkan bahwa semanga
     status: "diterima",
     isEditorPick: false,
     views: 650,
-    likes: 45,
+
     createdAt: "2024-11-28",
     publishedAt: "2024-12-01",
   },
@@ -397,7 +397,7 @@ Keterampilan pertolongan pertama bisa menyelamatkan nyawa. Berlatihlah secara ru
     status: "diterima",
     isEditorPick: true,
     views: 1780,
-    likes: 134,
+
     createdAt: "2024-12-08",
     publishedAt: "2024-12-10",
   },
@@ -467,7 +467,7 @@ Dengan latihan rutin, mendirikan tenda dome bisa dilakukan dalam waktu kurang da
     status: "diterima",
     isEditorPick: false,
     views: 920,
-    likes: 72,
+
     createdAt: "2024-12-12",
     publishedAt: "2024-12-14",
   },
@@ -500,3 +500,23 @@ export function searchArticles(query: string): Article[] {
       a.tags.some((t) => t.name.toLowerCase().includes(q))
   );
 }
+
+export interface LeaderboardEntry {
+  rank: number;
+  name: string;
+  username: string;
+  points: number;
+  articles: number;
+  badges: string[];
+}
+
+export const leaderboardData: LeaderboardEntry[] = [
+  { rank: 1, name: "Siti Rahayu", username: "siti_pandu", points: 580, articles: 12, badges: ["b1", "b2", "b3"] },
+  { rank: 2, name: "Raka Nugraha", username: "raka_pramuka", points: 420, articles: 7, badges: ["b1", "b2"] },
+  { rank: 3, name: "Dimas Pratama", username: "dimas_scout", points: 310, articles: 5, badges: ["b1", "b3"] },
+  { rank: 4, name: "Putri Andini", username: "putri_pramuka", points: 250, articles: 4, badges: ["b1"] },
+  { rank: 5, name: "Ahmad Fajar", username: "fajar_pramuka", points: 200, articles: 3, badges: ["b1"] },
+  { rank: 6, name: "Dewi Lestari", username: "dewi_pandu", points: 150, articles: 2, badges: ["b1"] },
+  { rank: 7, name: "Budi Santoso", username: "budi_scout", points: 100, articles: 2, badges: [] },
+  { rank: 8, name: "Rina Wati", username: "rina_pramuka", points: 50, articles: 1, badges: [] },
+];

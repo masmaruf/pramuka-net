@@ -1,7 +1,6 @@
 import type { User } from "./types";
 import type { Article } from "./types";
-
-const POINTS_PER_ARTICLE = 50;
+import { POINTS_PER_ARTICLE } from "./constants";
 
 interface BadgeRule {
   id: string;

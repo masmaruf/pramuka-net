@@ -5,11 +5,6 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   Award,
-  Pencil,
-  Flame,
-  Heart,
-  Bird,
-  Compass,
   Calendar,
   FileText,
   Star,
@@ -27,22 +22,9 @@ import { useArticleStore } from "@/lib/article-store";
 import { badges as allBadges, articles as seedArticles, getArticleBySlug } from "@/lib/data";
 import { getBadgeProgress } from "@/lib/gamification";
 import { useInteractionStore } from "@/lib/interaction-store";
-
-const iconMap: Record<string, React.ElementType> = {
-  pencil: Pencil,
-  flame: Flame,
-  award: Award,
-  heart: Heart,
-  eagle: Bird,
-  compass: Compass,
-};
-
-const roleLabelMap: Record<string, string> = {
-  member: "Anggota",
-  contributor: "Kontributor",
-  moderator: "Moderator",
-  admin: "Admin",
-};
+import { badgeIconMap } from "@/lib/icon-map";
+import { ROLE_LABELS } from "@/lib/constants";
+import { getInitials } from "@/lib/utils";
 
 export default function ProfilPage() {
   const { user, logout, isLoading } = useAuth();
@@ -85,12 +67,7 @@ export default function ProfilPage() {
           <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-center">
             <Avatar className="h-20 w-20">
               <AvatarFallback className="text-2xl">
-                {user.name
-                  .split(" ")
-                  .map((w) => w[0])
-                  .join("")
-                  .toUpperCase()
-                  .slice(0, 2)}
+                {getInitials(user.name)}
               </AvatarFallback>
             </Avatar>
 
@@ -98,7 +75,7 @@ export default function ProfilPage() {
               <div className="flex flex-wrap items-center gap-3">
                 <h1 className="text-2xl font-bold">{user.name}</h1>
                 <Badge variant="secondary">
-                  {roleLabelMap[user.role] || user.role}
+                  {ROLE_LABELS[user.role] || user.role}
                 </Badge>
               </div>
               <p className="text-muted-foreground">@{user.username}</p>
@@ -155,7 +132,7 @@ export default function ProfilPage() {
                 <Separator />
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">Role</span>
-                  <Badge variant="outline">{roleLabelMap[user.role]}</Badge>
+                  <Badge variant="outline">{ROLE_LABELS[user.role]}</Badge>
                 </div>
               </div>
             </CardContent>
@@ -179,7 +156,7 @@ export default function ProfilPage() {
                   }).length;
                   const bp = getBadgeProgress(badge.id, totalAccepted, monthly, cats.length);
                   const pct = earned ? 100 : bp.total > 0 ? (bp.current / bp.total) * 100 : 0;
-                  const Icon = iconMap[badge.icon] || Award;
+                  const Icon = badgeIconMap[badge.icon] || Award;
                   return (
                     <div key={badge.id}>
                       <div className="mb-1 flex items-center justify-between">
@@ -219,7 +196,7 @@ export default function ProfilPage() {
               {earnedBadges.length > 0 ? (
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                   {earnedBadges.map((badge) => {
-                    const Icon = iconMap[badge.icon] || Award;
+                    const Icon = badgeIconMap[badge.icon] || Award;
                     return (
                       <div
                         key={badge.id}

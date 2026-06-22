@@ -2,11 +2,6 @@
 
 import {
   Award,
-  Pencil,
-  Flame,
-  Heart,
-  Bird,
-  Compass,
   Trophy,
   Target,
   CheckCircle,
@@ -18,15 +13,8 @@ import { badges } from "@/lib/data";
 import { useAuth } from "@/lib/auth-context";
 import { useArticleStore } from "@/lib/article-store";
 import { getBadgeProgress } from "@/lib/gamification";
-
-const iconMap: Record<string, React.ElementType> = {
-  pencil: Pencil,
-  flame: Flame,
-  award: Award,
-  heart: Heart,
-  eagle: Bird,
-  compass: Compass,
-};
+import { badgeIconMap } from "@/lib/icon-map";
+import { POINTS_PER_ARTICLE } from "@/lib/constants";
 
 export default function BadgePage() {
   const { user } = useAuth();
@@ -48,7 +36,7 @@ export default function BadgePage() {
       id: "ch1",
       title: "Penulis Minggu Ini",
       description: "Tulis dan kirimkan 1 artikel minggu ini",
-      reward: "+50 poin",
+      reward: `+${POINTS_PER_ARTICLE} poin`,
       deadline: "Berakhir Minggu",
       progress: Math.min(monthlyCount, 1),
       total: 1,
@@ -57,7 +45,7 @@ export default function BadgePage() {
       id: "ch2",
       title: "Penjelajah Kategori",
       description: "Tulis artikel di 2 kategori berbeda bulan ini",
-      reward: "+100 poin",
+      reward: `+${POINTS_PER_ARTICLE * 2} poin`,
       deadline: "Berakhir akhir bulan",
       progress: Math.min(acceptedCategories.length, 2),
       total: 2,
@@ -66,7 +54,7 @@ export default function BadgePage() {
       id: "ch3",
       title: "Kontributor Andalan",
       description: "Terbitkan 3 artikel bulan ini",
-      reward: "+150 poin",
+      reward: `+${POINTS_PER_ARTICLE * 3} poin`,
       deadline: "Berakhir akhir bulan",
       progress: Math.min(monthlyCount, 3),
       total: 3,
@@ -93,7 +81,7 @@ export default function BadgePage() {
         <h2 className="mb-6 text-2xl font-bold">Galeri Badge</h2>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {badges.map((badge) => {
-            const Icon = iconMap[badge.icon] || Award;
+            const Icon = badgeIconMap[badge.icon] || Award;
             const earned = user?.badges.includes(badge.id);
             const progress = getBadgeProgress(
               badge.id,

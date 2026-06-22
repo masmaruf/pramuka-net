@@ -10,6 +10,7 @@ import {
 } from "react";
 import type { Article, ArticleStatus } from "./types";
 import { categories } from "./data";
+import { STORAGE_KEYS } from "./constants";
 
 interface SubmitArticleData {
   title: string;
@@ -34,7 +35,7 @@ interface ArticleStoreValue {
   getAcceptedCategories: (username: string) => string[];
 }
 
-const STORAGE_KEY = "pramuka_articles";
+
 
 function slugify(text: string): string {
   return text
@@ -51,14 +52,14 @@ export function ArticleStoreProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
+      const stored = localStorage.getItem(STORAGE_KEYS.ARTICLES);
       if (stored) setSubmittedArticles(JSON.parse(stored));
     } catch {}
   }, []);
 
   function persist(articles: Article[]) {
     setSubmittedArticles(articles);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(articles));
+    localStorage.setItem(STORAGE_KEYS.ARTICLES, JSON.stringify(articles));
   }
 
   const submitArticle = useCallback(
@@ -81,7 +82,6 @@ export function ArticleStoreProvider({ children }: { children: ReactNode }) {
         status: "menunggu",
         isEditorPick: false,
         views: 0,
-        likes: 0,
         createdAt: new Date().toISOString().slice(0, 10),
       };
       persist([newArticle, ...submittedArticles]);

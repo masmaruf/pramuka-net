@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Eye, Heart, Calendar, Clock } from "lucide-react";
+import { ArrowLeft, Eye, Calendar, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -8,15 +8,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ArticleCard } from "@/components/article/article-card";
 import { ArticleInteractions } from "@/components/article/article-interactions";
 import { articles, getArticleBySlug } from "@/lib/data";
-
-function getInitials(name: string) {
-  return name
-    .split(" ")
-    .map((w) => w[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
-}
+import { getInitials } from "@/lib/utils";
 
 function estimateReadTime(content: string): number {
   const words = content.trim().split(/\s+/).length;
@@ -112,10 +104,6 @@ export default async function ArticleDetailPage({
           <span className="flex items-center gap-1">
             <Eye className="h-4 w-4" />
             {article.views.toLocaleString("id-ID")} views
-          </span>
-          <span className="flex items-center gap-1">
-            <Heart className="h-4 w-4" />
-            {article.likes} likes
           </span>
         </div>
       </header>
@@ -216,7 +204,7 @@ export default async function ArticleDetailPage({
       </div>
 
       {/* Like, Bookmark, Comments */}
-      <ArticleInteractions slug={article.slug} baseLikes={article.likes} />
+      <ArticleInteractions slug={article.slug} />
 
       <Separator className="my-10" />
 
