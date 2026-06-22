@@ -44,6 +44,16 @@ export default function ProfilPage() {
   const { user, logout, isLoading } = useAuth();
   const router = useRouter();
 
+  useEffect(() => {
+    if (!isLoading && !user) router.replace("/login");
+  }, [user, isLoading, router]);
+
+  const earnedBadges = allBadges.filter((b) => user?.badges.includes(b.id));
+  const lockedBadges = allBadges.filter((b) => !user?.badges.includes(b.id));
+  const userArticles = articles.filter(
+    (a) => a.author.username === user?.username
+  );
+
   if (isLoading) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
@@ -52,17 +62,7 @@ export default function ProfilPage() {
     );
   }
 
-  useEffect(() => {
-    if (!isLoading && !user) router.replace("/login");
-  }, [user, isLoading, router]);
-
   if (!user) return null;
-
-  const earnedBadges = allBadges.filter((b) => user.badges.includes(b.id));
-  const lockedBadges = allBadges.filter((b) => !user.badges.includes(b.id));
-  const userArticles = articles.filter(
-    (a) => a.author.username === user.username
-  );
 
   function handleLogout() {
     logout();
