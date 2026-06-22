@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
 import {
   PenLine,
@@ -9,6 +10,8 @@ import {
   CheckCircle,
   Send,
   AlertCircle,
+  ImagePlus,
+  Trash2,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -31,11 +34,13 @@ export default function KirimArtikelPage() {
   const router = useRouter();
   const { user, isLoading } = useAuth();
   const { submitArticle } = useArticleStore();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [title, setTitle] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [excerpt, setExcerpt] = useState("");
   const [content, setContent] = useState("");
+  const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
   const [error, setError] = useState("");
@@ -46,6 +51,32 @@ export default function KirimArtikelPage() {
   }, [user, isLoading, router]);
 
   if (!user) return null;
+
+  function handleThumbnail(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setError("File harus berupa gambar (JPG, PNG, WebP)");
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      setError("Ukuran gambar maksimal 2MB");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setThumbnailUrl(reader.result as string);
+      setError("");
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function removeThumbnail() {
+    setThumbnailUrl(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }
 
   function addTag(e: React.KeyboardEvent) {
     if (e.key === "Enter") {
@@ -80,6 +111,7 @@ export default function KirimArtikelPage() {
       categoryId,
       excerpt: excerpt.trim(),
       content: content.trim(),
+      thumbnailUrl: thumbnailUrl || undefined,
       tags,
       authorId: user!.id,
       authorName: user!.name,
@@ -87,6 +119,17 @@ export default function KirimArtikelPage() {
     });
 
     setSubmitted(true);
+  }
+
+  function resetForm() {
+    setSubmitted(false);
+    setTitle("");
+    setCategoryId("");
+    setExcerpt("");
+    setContent("");
+    setThumbnailUrl(null);
+    setTags([]);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
   if (submitted) {
@@ -102,9 +145,7 @@ export default function KirimArtikelPage() {
           masukan dari moderator.
         </p>
         <div className="mt-8 flex justify-center gap-3">
-          <Button onClick={() => { setSubmitted(false); setTitle(""); setCategoryId(""); setExcerpt(""); setContent(""); setTags([]); }}>
-            Kirim Artikel Lagi
-          </Button>
+          <Button onClick={resetForm}>Kirim Artikel Lagi</Button>
           <Link href="/profil">
             <Button variant="outline">Lihat Profil</Button>
           </Link>
@@ -128,7 +169,6 @@ export default function KirimArtikelPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-        {/* Form */}
         <div className="lg:col-span-2">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
@@ -160,6 +200,49 @@ export default function KirimArtikelPage() {
                   </option>
                 ))}
               </select>
+            </div>
+
+            {/* Thumbnail Upload */}
+            <div>
+              <label className="mb-1.5 block text-sm font-medium">
+                Thumbnail Artikel
+              </label>
+              {thumbnailUrl ? (
+                <div className="relative overflow-hidden rounded-lg border">
+                  <Image
+                    src={thumbnailUrl}
+                    alt="Thumbnail preview"
+                    width={800}
+                    height={400}
+                    className="h-48 w-full object-cover"
+                    unoptimized
+                  />
+                  <button
+                    type="button"
+                    onClick={removeThumbnail}
+                    className="absolute right-2 top-2 rounded-full bg-black/60 p-1.5 text-white transition-colors hover:bg-black/80"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex w-full flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed py-10 text-muted-foreground transition-colors hover:border-primary/50 hover:text-primary"
+                >
+                  <ImagePlus className="h-8 w-8" />
+                  <span className="text-sm font-medium">Upload Thumbnail</span>
+                  <span className="text-xs">JPG, PNG, WebP · Maks. 2MB</span>
+                </button>
+              )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={handleThumbnail}
+                className="hidden"
+              />
             </div>
 
             <div>
@@ -217,9 +300,7 @@ export default function KirimArtikelPage() {
                   />
                 )}
               </div>
-              <p className="mt-1 text-xs text-muted-foreground">
-                Maks. 5 tags
-              </p>
+              <p className="mt-1 text-xs text-muted-foreground">Maks. 5 tags</p>
             </div>
 
             {error && (
@@ -236,7 +317,6 @@ export default function KirimArtikelPage() {
           </form>
         </div>
 
-        {/* Sidebar */}
         <div className="space-y-6">
           <Card>
             <CardContent className="p-5">

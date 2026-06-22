@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Eye, Heart, Calendar, Star } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -17,7 +18,18 @@ function getInitials(name: string) {
 export function ArticleCard({ article }: { article: Article }) {
   return (
     <Link href={`/artikel/${article.slug}`}>
-      <Card className="group h-full transition-all hover:shadow-md hover:-translate-y-0.5">
+      <Card className="group h-full overflow-hidden transition-all hover:shadow-md hover:-translate-y-0.5">
+        {article.thumbnailUrl && (
+          <div className="relative h-44 w-full overflow-hidden">
+            <Image
+              src={article.thumbnailUrl}
+              alt={article.title}
+              fill
+              className="object-cover transition-transform group-hover:scale-105"
+              unoptimized
+            />
+          </div>
+        )}
         <CardContent className="flex h-full flex-col p-5">
           <div className="mb-3 flex items-center gap-2">
             <Badge variant="secondary" className="text-xs">

@@ -24,6 +24,7 @@ export interface Article {
   slug: string;
   excerpt: string;
   content: string;
+  thumbnailUrl?: string;
   category: Category;
   tags: Tag[];
   author: Author;

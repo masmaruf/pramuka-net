@@ -16,6 +16,7 @@ interface SubmitArticleData {
   categoryId: string;
   excerpt: string;
   content: string;
+  thumbnailUrl?: string;
   tags: string[];
   authorId: string;
   authorName: string;
@@ -67,6 +68,7 @@ export function ArticleStoreProvider({ children }: { children: ReactNode }) {
         slug: slugify(data.title),
         excerpt: data.excerpt,
         content: data.content,
+        thumbnailUrl: data.thumbnailUrl,
         category,
         tags: data.tags.map((t, i) => ({ id: `t-${Date.now()}-${i}`, name: t })),
         author: {
