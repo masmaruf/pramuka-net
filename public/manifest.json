@@ -1,0 +1,20 @@
+{
+  "name": "Pramuka.net — Platform Kepanduan Indonesia",
+  "short_name": "Pramuka.net",
+  "description": "Platform komunitas kepanduan Indonesia untuk berbagi ilmu dan semangat Pramuka.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a5c2f",
+  "theme_color": "#0a5c2f",
+  "orientation": "portrait-primary",
+  "categories": ["education", "social"],
+  "lang": "id",
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

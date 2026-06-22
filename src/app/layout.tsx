@@ -7,6 +7,7 @@ import { NotificationStoreProvider } from "@/lib/notification-store";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { ThemeProvider } from "@/components/layout/theme-provider";
+import { PwaRegister } from "@/components/layout/pwa-register";
 import "./globals.css";
 
 const inter = Inter({
@@ -73,7 +74,16 @@ export default function RootLayout({
       className={`${inter.variable} ${jakarta.variable} h-full antialiased`}
       suppressHydrationWarning
     >
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#0a5c2f" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="Pramuka.net" />
+        <link rel="apple-touch-icon" href="/icons/icon.svg" />
+      </head>
       <body className="flex min-h-full flex-col bg-background text-foreground">
+        <PwaRegister />
         <ThemeProvider>
           <AuthProvider>
             <ArticleStoreProvider>

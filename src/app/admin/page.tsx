@@ -24,7 +24,8 @@ import { calculateNewBadges, getPointsReward } from "@/lib/gamification";
 import { getInitials } from "@/lib/utils";
 import { useNotificationStore } from "@/lib/notification-store";
 import { POINTS_PER_ARTICLE } from "@/lib/constants";
-import { badges as allBadges } from "@/lib/data";
+import { badges as allBadges, articles as seedArticles } from "@/lib/data";
+import { AnalyticsCharts } from "@/components/admin/analytics-charts";
 
 export default function AdminPage() {
   const { user, isLoading, updateUser } = useAuth();
@@ -284,6 +285,15 @@ export default function AdminPage() {
           </div>
         </section>
       )}
+      {/* Analytics */}
+      <Separator className="my-10" />
+      <section>
+        <div className="mb-6 flex items-center gap-2">
+          <BarChart3 className="h-5 w-5 text-primary" />
+          <h2 className="text-xl font-bold">Analitik</h2>
+        </div>
+        <AnalyticsCharts articles={[...submittedArticles, ...seedArticles]} />
+      </section>
     </div>
   );
 }
