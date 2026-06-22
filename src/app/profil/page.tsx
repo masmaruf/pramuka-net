@@ -15,6 +15,7 @@ import {
   Star,
   Trophy,
   LogOut,
+  Bookmark,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -23,8 +24,9 @@ import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/lib/auth-context";
 import { useArticleStore } from "@/lib/article-store";
-import { badges as allBadges, articles as seedArticles } from "@/lib/data";
+import { badges as allBadges, articles as seedArticles, getArticleBySlug } from "@/lib/data";
 import { getBadgeProgress } from "@/lib/gamification";
+import { useInteractionStore } from "@/lib/interaction-store";
 
 const iconMap: Record<string, React.ElementType> = {
   pencil: Pencil,
@@ -46,6 +48,7 @@ export default function ProfilPage() {
   const { user, logout, isLoading } = useAuth();
   const router = useRouter();
   const { getByAuthor, getAcceptedByAuthor, getAcceptedCategories } = useArticleStore();
+  const { getBookmarks } = useInteractionStore();
 
   useEffect(() => {
     if (!isLoading && !user) router.replace("/login");
@@ -310,6 +313,47 @@ export default function ProfilPage() {
                   </p>
                 </div>
               )}
+            </CardContent>
+          </Card>
+
+          {/* Artikel Disimpan (Bookmark) */}
+          <Card>
+            <CardContent className="p-5">
+              <div className="mb-4 flex items-center gap-2">
+                <Bookmark className="h-5 w-5 text-primary" />
+                <h2 className="font-semibold">Artikel Disimpan</h2>
+              </div>
+              {(() => {
+                const slugs = getBookmarks(user.id);
+                const saved = slugs
+                  .map((s) => getArticleBySlug(s))
+                  .filter(Boolean) as NonNullable<ReturnType<typeof getArticleBySlug>>[];
+                if (saved.length === 0) {
+                  return (
+                    <div className="rounded-lg border border-dashed p-6 text-center">
+                      <p className="text-sm text-muted-foreground">
+                        Belum ada artikel yang disimpan. Tekan ikon bookmark di artikel untuk menyimpan.
+                      </p>
+                    </div>
+                  );
+                }
+                return (
+                  <div className="space-y-3">
+                    {saved.map((article) => (
+                      <Link
+                        key={article.id}
+                        href={`/artikel/${article.slug}`}
+                        className="block rounded-lg border p-3 transition-colors hover:bg-muted/50"
+                      >
+                        <h3 className="text-sm font-medium">{article.title}</h3>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          {article.category.name} · {article.author.name}
+                        </p>
+                      </Link>
+                    ))}
+                  </div>
+                );
+              })()}
             </CardContent>
           </Card>
         </div>

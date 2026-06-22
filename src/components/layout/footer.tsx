@@ -4,6 +4,7 @@ const footerLinks = {
   platform: [
     { href: "/artikel", label: "Artikel Kepanduan" },
     { href: "/badge", label: "Badge & Tantangan" },
+    { href: "/leaderboard", label: "Leaderboard" },
     { href: "/panduan", label: "Panduan Kontribusi" },
   ],
   info: [

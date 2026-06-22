@@ -11,6 +11,7 @@ import { useAuth } from "@/lib/auth-context";
 const navLinks = [
   { href: "/", label: "Beranda" },
   { href: "/artikel", label: "Artikel" },
+  { href: "/leaderboard", label: "Leaderboard" },
   { href: "/badge", label: "Badge & Tantangan" },
 ];
 

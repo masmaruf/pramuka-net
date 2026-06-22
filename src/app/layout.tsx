@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import { AuthProvider } from "@/lib/auth-context";
 import { ArticleStoreProvider } from "@/lib/article-store";
+import { InteractionStoreProvider } from "@/lib/interaction-store";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import "./globals.css";
@@ -72,9 +73,11 @@ export default function RootLayout({
       <body className="flex min-h-full flex-col bg-background text-foreground">
         <AuthProvider>
           <ArticleStoreProvider>
-            <Navbar />
-            <main className="flex-1">{children}</main>
-            <Footer />
+            <InteractionStoreProvider>
+              <Navbar />
+              <main className="flex-1">{children}</main>
+              <Footer />
+            </InteractionStoreProvider>
           </ArticleStoreProvider>
         </AuthProvider>
       </body>

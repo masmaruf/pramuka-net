@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ArticleCard } from "@/components/article/article-card";
+import { ArticleInteractions } from "@/components/article/article-interactions";
 import { articles, getArticleBySlug } from "@/lib/data";
 
 function getInitials(name: string) {
@@ -213,6 +214,9 @@ export default async function ArticleDetailPage({
           </Badge>
         ))}
       </div>
+
+      {/* Like, Bookmark, Comments */}
+      <ArticleInteractions slug={article.slug} baseLikes={article.likes} />
 
       <Separator className="my-10" />
 
