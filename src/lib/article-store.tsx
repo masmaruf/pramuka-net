@@ -24,9 +24,20 @@ interface SubmitArticleData {
   authorUsername: string;
 }
 
+interface EditArticleData {
+  title: string;
+  categoryId: string;
+  excerpt: string;
+  content: string;
+  thumbnailUrl?: string;
+  tags: string[];
+}
+
 interface ArticleStoreValue {
   submittedArticles: Article[];
   submitArticle: (data: SubmitArticleData) => void;
+  editArticle: (id: string, data: EditArticleData) => void;
+  deleteArticle: (id: string) => void;
   updateStatus: (id: string, status: ArticleStatus, onAccepted?: (article: Article) => void) => void;
   toggleEditorPick: (id: string) => void;
   getByAuthor: (username: string) => Article[];
@@ -85,6 +96,36 @@ export function ArticleStoreProvider({ children }: { children: ReactNode }) {
         createdAt: new Date().toISOString().slice(0, 10),
       };
       persist([newArticle, ...submittedArticles]);
+    },
+    [submittedArticles]
+  );
+
+  const editArticle = useCallback(
+    (id: string, data: EditArticleData) => {
+      const category = categories.find((c) => c.id === data.categoryId);
+      const updated = submittedArticles.map((a) =>
+        a.id === id
+          ? {
+              ...a,
+              title: data.title,
+              slug: slugify(data.title),
+              excerpt: data.excerpt,
+              content: data.content,
+              thumbnailUrl: data.thumbnailUrl,
+              category: category || a.category,
+              tags: data.tags.map((t, i) => ({ id: `t-${Date.now()}-${i}`, name: t })),
+              status: "menunggu" as ArticleStatus,
+            }
+          : a
+      );
+      persist(updated);
+    },
+    [submittedArticles]
+  );
+
+  const deleteArticle = useCallback(
+    (id: string) => {
+      persist(submittedArticles.filter((a) => a.id !== id));
     },
     [submittedArticles]
   );
@@ -149,7 +190,7 @@ export function ArticleStoreProvider({ children }: { children: ReactNode }) {
 
   return (
     <ArticleStoreContext.Provider
-      value={{ submittedArticles, submitArticle, updateStatus, toggleEditorPick, getByAuthor, getPending, getAcceptedByAuthor, getAcceptedCategories }}
+      value={{ submittedArticles, submitArticle, editArticle, deleteArticle, updateStatus, toggleEditorPick, getByAuthor, getPending, getAcceptedByAuthor, getAcceptedCategories }}
     >
       {children}
     </ArticleStoreContext.Provider>

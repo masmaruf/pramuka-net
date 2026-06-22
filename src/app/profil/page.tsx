@@ -11,6 +11,8 @@ import {
   Trophy,
   LogOut,
   Bookmark,
+  Pencil,
+  Trash2,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -29,7 +31,7 @@ import { getInitials } from "@/lib/utils";
 export default function ProfilPage() {
   const { user, logout, isLoading } = useAuth();
   const router = useRouter();
-  const { getByAuthor, getAcceptedByAuthor, getAcceptedCategories } = useArticleStore();
+  const { getByAuthor, getAcceptedByAuthor, getAcceptedCategories, deleteArticle } = useArticleStore();
   const { getBookmarks } = useInteractionStore();
 
   useEffect(() => {
@@ -255,33 +257,57 @@ export default function ProfilPage() {
               </div>
               {userArticles.length > 0 ? (
                 <div className="space-y-3">
-                  {userArticles.map((article) => (
-                    <Link
-                      key={article.id}
-                      href={`/artikel/${article.slug}`}
-                      className="block rounded-lg border p-3 transition-colors hover:bg-muted/50"
-                    >
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-sm font-medium">{article.title}</h3>
-                        <Badge
-                          variant={
-                            article.status === "diterima"
-                              ? "default"
-                              : article.status === "menunggu"
-                                ? "secondary"
-                                : "destructive"
-                          }
-                          className="text-xs"
-                        >
-                          {article.status}
-                        </Badge>
+                  {userArticles.map((article) => {
+                    const isSubmitted = article.id.startsWith("sub-");
+                    const canEdit = isSubmitted && article.status !== "diterima";
+                    return (
+                      <div
+                        key={article.id}
+                        className="rounded-lg border p-3 transition-colors hover:bg-muted/50"
+                      >
+                        <div className="flex items-center justify-between">
+                          <Link href={`/artikel/${article.slug}`} className="flex-1 min-w-0">
+                            <h3 className="text-sm font-medium truncate">{article.title}</h3>
+                          </Link>
+                          <div className="flex items-center gap-2 shrink-0 ml-2">
+                            <Badge
+                              variant={
+                                article.status === "diterima"
+                                  ? "default"
+                                  : article.status === "menunggu"
+                                    ? "secondary"
+                                    : "destructive"
+                              }
+                              className="text-xs"
+                            >
+                              {article.status}
+                            </Badge>
+                            {canEdit && (
+                              <>
+                                <Link href={`/kirim-artikel?edit=${article.id}`}>
+                                  <Button variant="ghost" size="icon" className="h-7 w-7">
+                                    <Pencil className="h-3.5 w-3.5" />
+                                  </Button>
+                                </Link>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7 text-destructive"
+                                  onClick={() => deleteArticle(article.id)}
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </Button>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          {article.category.name} ·{" "}
+                          {new Date(article.createdAt).toLocaleDateString("id-ID")}
+                        </p>
                       </div>
-                      <p className="mt-1 text-xs text-muted-foreground">
-                        {article.category.name} ·{" "}
-                        {new Date(article.createdAt).toLocaleDateString("id-ID")}
-                      </p>
-                    </Link>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
                 <div className="rounded-lg border border-dashed p-6 text-center">

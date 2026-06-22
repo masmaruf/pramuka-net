@@ -11,6 +11,7 @@ import {
   FileText,
   Users,
   BarChart3,
+  Trash2,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -30,7 +31,7 @@ import { AnalyticsCharts } from "@/components/admin/analytics-charts";
 export default function AdminPage() {
   const { user, isLoading, updateUser } = useAuth();
   const router = useRouter();
-  const { submittedArticles, updateStatus, toggleEditorPick, getAcceptedByAuthor, getAcceptedCategories } = useArticleStore();
+  const { submittedArticles, updateStatus, toggleEditorPick, deleteArticle, getAcceptedByAuthor, getAcceptedCategories } = useArticleStore();
   const { addNotification } = useNotificationStore();
 
   useEffect(() => {
@@ -270,15 +271,25 @@ export default function AdminPage() {
                       {article.author.name} · {article.createdAt}
                     </p>
                   </div>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="gap-1"
-                    onClick={() => handleAccept(article.id)}
-                  >
-                    <CheckCircle className="h-4 w-4" />
-                    Terima Ulang
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="gap-1"
+                      onClick={() => handleAccept(article.id)}
+                    >
+                      <CheckCircle className="h-4 w-4" />
+                      Terima Ulang
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="gap-1 text-destructive"
+                      onClick={() => deleteArticle(article.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             ))}

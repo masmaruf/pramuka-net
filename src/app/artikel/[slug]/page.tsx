@@ -10,10 +10,27 @@ import { ArticleInteractions } from "@/components/article/article-interactions";
 import { ArticleShare } from "@/components/article/article-share";
 import { articles, getArticleBySlug } from "@/lib/data";
 import { getInitials } from "@/lib/utils";
+import { ReadingProgress } from "@/components/article/reading-progress";
 
 function estimateReadTime(content: string): number {
-  const words = content.trim().split(/\s+/).length;
-  return Math.max(1, Math.round(words / 200));
+  const text = content.replace(/<[^>]*>/g, " ");
+  const words = text.trim().split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 180));
+}
+
+function getRelatedArticles(current: typeof articles[0], all: typeof articles, max = 3) {
+  const currentTags = new Set(current.tags.map((t) => t.name.toLowerCase()));
+  const scored = all
+    .filter((a) => a.id !== current.id)
+    .map((a) => {
+      let score = 0;
+      if (a.category.id === current.category.id) score += 2;
+      a.tags.forEach((t) => { if (currentTags.has(t.name.toLowerCase())) score += 3; });
+      return { article: a, score };
+    })
+    .filter((s) => s.score > 0)
+    .sort((a, b) => b.score - a.score);
+  return scored.slice(0, max).map((s) => s.article);
 }
 
 export function generateStaticParams() {
@@ -44,16 +61,14 @@ export default async function ArticleDetailPage({
   if (!article) notFound();
 
   const readTime = estimateReadTime(article.content);
-  const related = articles
-    .filter(
-      (a) => a.id !== article.id && a.category.id === article.category.id
-    )
-    .slice(0, 3);
 
   const isHtmlContent = article.content.startsWith("<");
   const paragraphs = isHtmlContent ? [] : article.content.split("\n");
+  const related = getRelatedArticles(article, articles);
 
   return (
+    <>
+    <ReadingProgress />
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
       {/* Back */}
       <Link href="/artikel">
@@ -232,5 +247,6 @@ export default async function ArticleDetailPage({
         </section>
       )}
     </div>
+    </>
   );
 }

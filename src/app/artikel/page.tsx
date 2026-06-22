@@ -4,13 +4,17 @@ import { useState, useMemo } from "react";
 import { Search, SlidersHorizontal } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { ArticleCard } from "@/components/article/article-card";
 import { articles as seedArticles, categories } from "@/lib/data";
 import { useArticleStore } from "@/lib/article-store";
 
+const PAGE_SIZE = 6;
+
 export default function ArtikelPage() {
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const { submittedArticles } = useArticleStore();
 
   const allArticles = useMemo(() => {
@@ -38,6 +42,19 @@ export default function ArtikelPage() {
     return result;
   }, [query, activeCategory, allArticles]);
 
+  const visible = filtered.slice(0, visibleCount);
+  const hasMore = visibleCount < filtered.length;
+
+  function handleCategoryChange(slug: string | null) {
+    setActiveCategory(slug);
+    setVisibleCount(PAGE_SIZE);
+  }
+
+  function handleSearch(value: string) {
+    setQuery(value);
+    setVisibleCount(PAGE_SIZE);
+  }
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="mb-8">
@@ -53,7 +70,7 @@ export default function ArtikelPage() {
           <Input
             placeholder="Cari artikel..."
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => handleSearch(e.target.value)}
             className="pl-10"
           />
         </div>
@@ -63,7 +80,7 @@ export default function ArtikelPage() {
           <Badge
             variant={activeCategory === null ? "default" : "outline"}
             className="cursor-pointer"
-            onClick={() => setActiveCategory(null)}
+            onClick={() => handleCategoryChange(null)}
           >
             Semua
           </Badge>
@@ -73,7 +90,7 @@ export default function ArtikelPage() {
               variant={activeCategory === cat.slug ? "default" : "outline"}
               className="cursor-pointer"
               onClick={() =>
-                setActiveCategory(activeCategory === cat.slug ? null : cat.slug)
+                handleCategoryChange(activeCategory === cat.slug ? null : cat.slug)
               }
             >
               {cat.name}
@@ -83,11 +100,24 @@ export default function ArtikelPage() {
       </div>
 
       {filtered.length > 0 ? (
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((article) => (
-            <ArticleCard key={article.id} article={article} />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {visible.map((article) => (
+              <ArticleCard key={article.id} article={article} />
+            ))}
+          </div>
+          {hasMore && (
+            <div className="mt-10 text-center">
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => setVisibleCount((prev) => prev + PAGE_SIZE)}
+              >
+                Muat Lebih Banyak ({filtered.length - visibleCount} lagi)
+              </Button>
+            </div>
+          )}
+        </>
       ) : (
         <div className="py-20 text-center">
           <p className="text-lg font-medium text-muted-foreground">

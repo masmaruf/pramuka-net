@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState, useEffect, useRef } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -33,9 +33,20 @@ const rules = [
 ];
 
 export default function KirimArtikelPage() {
+  return (
+    <Suspense fallback={<div className="flex min-h-[50vh] items-center justify-center"><p className="text-muted-foreground">Memuat...</p></div>}>
+      <KirimArtikelContent />
+    </Suspense>
+  );
+}
+
+function KirimArtikelContent() {
   const router = useRouter();
   const { user, isLoading } = useAuth();
-  const { submitArticle } = useArticleStore();
+  const { submitArticle, editArticle, submittedArticles } = useArticleStore();
+  const searchParams = useSearchParams();
+  const editId = searchParams.get("edit");
+  const editingArticle = editId ? submittedArticles.find((a) => a.id === editId) : null;
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [title, setTitle] = useState("");
@@ -47,10 +58,23 @@ export default function KirimArtikelPage() {
   const [tagInput, setTagInput] = useState("");
   const [error, setError] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [editLoaded, setEditLoaded] = useState(false);
 
   useEffect(() => {
     if (!isLoading && !user) router.replace("/login");
   }, [user, isLoading, router]);
+
+  useEffect(() => {
+    if (editingArticle && !editLoaded) {
+      setTitle(editingArticle.title);
+      setCategoryId(editingArticle.category.id);
+      setExcerpt(editingArticle.excerpt);
+      setContent(editingArticle.content);
+      setThumbnailUrl(editingArticle.thumbnailUrl || null);
+      setTags(editingArticle.tags.map((t) => t.name));
+      setEditLoaded(true);
+    }
+  }, [editingArticle, editLoaded]);
 
   if (!user) return null;
 
@@ -109,17 +133,28 @@ export default function KirimArtikelPage() {
       return;
     }
 
-    submitArticle({
-      title: title.trim(),
-      categoryId,
-      excerpt: excerpt.trim(),
-      content: content.trim(),
-      thumbnailUrl: thumbnailUrl || undefined,
-      tags,
-      authorId: user!.id,
-      authorName: user!.name,
-      authorUsername: user!.username,
-    });
+    if (editId && editingArticle) {
+      editArticle(editId, {
+        title: title.trim(),
+        categoryId,
+        excerpt: excerpt.trim(),
+        content: content.trim(),
+        thumbnailUrl: thumbnailUrl || undefined,
+        tags,
+      });
+    } else {
+      submitArticle({
+        title: title.trim(),
+        categoryId,
+        excerpt: excerpt.trim(),
+        content: content.trim(),
+        thumbnailUrl: thumbnailUrl || undefined,
+        tags,
+        authorId: user!.id,
+        authorName: user!.name,
+        authorUsername: user!.username,
+      });
+    }
 
     setSubmitted(true);
   }
@@ -163,9 +198,9 @@ export default function KirimArtikelPage() {
         <div className="flex items-center gap-3">
           <PenLine className="h-8 w-8 text-primary" />
           <div>
-            <h1 className="text-3xl font-bold">Kirim Artikel</h1>
+            <h1 className="text-3xl font-bold">{editId ? "Edit Artikel" : "Kirim Artikel"}</h1>
             <p className="text-muted-foreground">
-              Bagikan pengetahuan kepanduanmu kepada komunitas Pramuka Indonesia
+              {editId ? "Perbarui artikelmu lalu kirim ulang untuk moderasi" : "Bagikan pengetahuan kepanduanmu kepada komunitas Pramuka Indonesia"}
             </p>
           </div>
         </div>
@@ -308,7 +343,7 @@ export default function KirimArtikelPage() {
 
             <Button type="submit" size="lg" className="w-full gap-2">
               <Send className="h-4 w-4" />
-              Kirim untuk Moderasi
+              {editId ? "Simpan & Kirim Ulang" : "Kirim untuk Moderasi"}
             </Button>
           </form>
         </div>
