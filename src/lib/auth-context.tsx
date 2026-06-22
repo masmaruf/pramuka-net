@@ -19,6 +19,7 @@ interface AuthContextValue extends AuthState {
   login: (email: string, password: string) => Promise<{ ok: boolean; error?: string }>;
   register: (data: RegisterData) => Promise<{ ok: boolean; error?: string }>;
   logout: () => void;
+  updateUser: (updates: Partial<User>) => void;
 }
 
 interface RegisterData {
@@ -154,12 +155,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [persist]
   );
 
+  const updateUser = useCallback(
+    (updates: Partial<User>) => {
+      if (!state.user) return;
+      const updated = { ...state.user, ...updates };
+      persist(updated);
+    },
+    [state.user, persist]
+  );
+
   const logout = useCallback(() => {
     persist(null);
   }, [persist]);
 
   return (
-    <AuthContext.Provider value={{ ...state, login, register, logout }}>
+    <AuthContext.Provider value={{ ...state, login, register, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

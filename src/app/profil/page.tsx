@@ -24,6 +24,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/lib/auth-context";
 import { useArticleStore } from "@/lib/article-store";
 import { badges as allBadges, articles as seedArticles } from "@/lib/data";
+import { getBadgeProgress } from "@/lib/gamification";
 
 const iconMap: Record<string, React.ElementType> = {
   pencil: Pencil,
@@ -44,7 +45,7 @@ const roleLabelMap: Record<string, string> = {
 export default function ProfilPage() {
   const { user, logout, isLoading } = useAuth();
   const router = useRouter();
-  const { getByAuthor } = useArticleStore();
+  const { getByAuthor, getAcceptedByAuthor, getAcceptedCategories } = useArticleStore();
 
   useEffect(() => {
     if (!isLoading && !user) router.replace("/login");
@@ -162,15 +163,19 @@ export default function ProfilPage() {
             <CardContent className="p-5">
               <h2 className="mb-4 font-semibold">Progress Menuju Badge</h2>
               <div className="space-y-4">
-                {allBadges.slice(0, 3).map((badge) => {
+                {allBadges.slice(0, 4).map((badge) => {
                   const earned = user.badges.includes(badge.id);
-                  const progress = earned
-                    ? 100
-                    : badge.id === "b1"
-                      ? Math.min((user.articleCount / 1) * 100, 100)
-                      : badge.id === "b2"
-                        ? Math.min((user.articleCount / 3) * 100, 100)
-                        : Math.min((user.articleCount / 5) * 100, 100);
+                  const accepted = getAcceptedByAuthor(user.username);
+                  const cats = getAcceptedCategories(user.username);
+                  const totalAccepted = accepted.length + user.articleCount;
+                  const now = new Date();
+                  const monthly = accepted.filter((a) => {
+                    if (!a.publishedAt) return false;
+                    const d = new Date(a.publishedAt);
+                    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+                  }).length;
+                  const bp = getBadgeProgress(badge.id, totalAccepted, monthly, cats.length);
+                  const pct = earned ? 100 : bp.total > 0 ? (bp.current / bp.total) * 100 : 0;
                   const Icon = iconMap[badge.icon] || Award;
                   return (
                     <div key={badge.id}>
@@ -179,14 +184,16 @@ export default function ProfilPage() {
                           <Icon className="h-4 w-4 text-primary" />
                           <span className="text-sm font-medium">{badge.name}</span>
                         </div>
-                        {earned && (
+                        {earned ? (
                           <Badge className="bg-primary/10 text-primary text-xs">Diraih</Badge>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">{bp.current}/{bp.total}</span>
                         )}
                       </div>
                       <div className="h-2 overflow-hidden rounded-full bg-muted">
                         <div
                           className="h-full rounded-full bg-primary transition-all"
-                          style={{ width: `${progress}%` }}
+                          style={{ width: `${pct}%` }}
                         />
                       </div>
                     </div>

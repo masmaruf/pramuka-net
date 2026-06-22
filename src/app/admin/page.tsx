@@ -20,11 +20,12 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/lib/auth-context";
 import { useArticleStore } from "@/lib/article-store";
 import { siteStats } from "@/lib/data";
+import { calculateNewBadges, getPointsReward } from "@/lib/gamification";
 
 export default function AdminPage() {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, updateUser } = useAuth();
   const router = useRouter();
-  const { submittedArticles, updateStatus, toggleEditorPick } = useArticleStore();
+  const { submittedArticles, updateStatus, toggleEditorPick, getAcceptedByAuthor, getAcceptedCategories } = useArticleStore();
 
   useEffect(() => {
     if (!isLoading && (!user || (user.role !== "admin" && user.role !== "moderator"))) {
@@ -49,6 +50,30 @@ export default function AdminPage() {
 
   function getInitials(name: string) {
     return name.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2);
+  }
+
+  function handleAccept(articleId: string) {
+    updateStatus(articleId, "diterima", (article) => {
+      if (!user) return;
+      const authorAccepted = [...getAcceptedByAuthor(article.author.username), article];
+      const authorCats = [...new Set([...getAcceptedCategories(article.author.username), article.category.id])];
+      const fakeAuthorUser = {
+        ...user,
+        id: article.author.id,
+        username: article.author.username,
+        points: 0,
+        articleCount: authorAccepted.length,
+        badges: [] as string[],
+      };
+      const newBadges = calculateNewBadges(fakeAuthorUser, authorAccepted, authorCats);
+      if (user.username === article.author.username) {
+        updateUser({
+          points: user.points + getPointsReward(),
+          articleCount: user.articleCount + 1,
+          badges: [...new Set([...user.badges, ...newBadges])],
+        });
+      }
+    });
   }
 
   return (
@@ -129,7 +154,7 @@ export default function AdminPage() {
                       <Button
                         size="sm"
                         className="gap-1"
-                        onClick={() => updateStatus(article.id, "diterima")}
+                        onClick={() => handleAccept(article.id)}
                       >
                         <CheckCircle className="h-4 w-4" />
                         Terima
@@ -215,7 +240,7 @@ export default function AdminPage() {
                     size="sm"
                     variant="outline"
                     className="gap-1"
-                    onClick={() => updateStatus(article.id, "diterima")}
+                    onClick={() => handleAccept(article.id)}
                   >
                     <CheckCircle className="h-4 w-4" />
                     Terima Ulang

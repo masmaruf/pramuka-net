@@ -26,10 +26,12 @@ interface SubmitArticleData {
 interface ArticleStoreValue {
   submittedArticles: Article[];
   submitArticle: (data: SubmitArticleData) => void;
-  updateStatus: (id: string, status: ArticleStatus) => void;
+  updateStatus: (id: string, status: ArticleStatus, onAccepted?: (article: Article) => void) => void;
   toggleEditorPick: (id: string) => void;
   getByAuthor: (username: string) => Article[];
   getPending: () => Article[];
+  getAcceptedByAuthor: (username: string) => Article[];
+  getAcceptedCategories: (username: string) => string[];
 }
 
 const STORAGE_KEY = "pramuka_articles";
@@ -88,7 +90,8 @@ export function ArticleStoreProvider({ children }: { children: ReactNode }) {
   );
 
   const updateStatus = useCallback(
-    (id: string, status: ArticleStatus) => {
+    (id: string, status: ArticleStatus, onAccepted?: (article: Article) => void) => {
+      const article = submittedArticles.find((a) => a.id === id);
       const updated = submittedArticles.map((a) =>
         a.id === id
           ? {
@@ -99,6 +102,9 @@ export function ArticleStoreProvider({ children }: { children: ReactNode }) {
           : a
       );
       persist(updated);
+      if (status === "diterima" && article && onAccepted) {
+        onAccepted(article);
+      }
     },
     [submittedArticles]
   );
@@ -123,9 +129,27 @@ export function ArticleStoreProvider({ children }: { children: ReactNode }) {
     [submittedArticles]
   );
 
+  const getAcceptedByAuthor = useCallback(
+    (username: string) =>
+      submittedArticles.filter((a) => a.author.username === username && a.status === "diterima"),
+    [submittedArticles]
+  );
+
+  const getAcceptedCategories = useCallback(
+    (username: string) => {
+      const cats = new Set(
+        submittedArticles
+          .filter((a) => a.author.username === username && a.status === "diterima")
+          .map((a) => a.category.id)
+      );
+      return Array.from(cats);
+    },
+    [submittedArticles]
+  );
+
   return (
     <ArticleStoreContext.Provider
-      value={{ submittedArticles, submitArticle, updateStatus, toggleEditorPick, getByAuthor, getPending }}
+      value={{ submittedArticles, submitArticle, updateStatus, toggleEditorPick, getByAuthor, getPending, getAcceptedByAuthor, getAcceptedCategories }}
     >
       {children}
     </ArticleStoreContext.Provider>
